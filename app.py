@@ -1,6 +1,9 @@
+import os
+
 from flask import Flask, render_template, request, jsonify
 from services.ai_service import ask_ai
 from services.database import init_db, save_chat, get_history
+
 
 app = Flask(__name__)
 
