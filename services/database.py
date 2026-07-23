@@ -1,53 +1,154 @@
 import sqlite3
+from contextlib import closing
 
 DB_NAME = "database/chat.db"
 
-def init_db():
 
+def get_connection():
+    """
+    Create and return a SQLite connection.
+    """
     conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
 
-    cursor = conn.cursor()
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS conversations(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_message TEXT NOT NULL,
-            bot_message TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+def init_db():
+    """
+    Initialize database if it does not exist.
+    """
 
-    conn.commit()
-    conn.close()
+    with closing(get_connection()) as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS conversations (
+
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                user_message TEXT NOT NULL,
+
+                bot_message TEXT NOT NULL,
+
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            )
+        """)
+
+        conn.commit()
+
 
 def save_chat(user_message, bot_message):
+    """
+    Save one conversation into database.
+    """
 
-    conn = sqlite3.connect(DB_NAME)
+    with closing(get_connection()) as conn:
 
-    cursor = conn.cursor()
+        cursor = conn.cursor()
 
-    cursor.execute("""
-        INSERT INTO conversations(user_message, bot_message)
-        VALUES(?,?)
-    """, (user_message, bot_message))
+        cursor.execute("""
+            INSERT INTO conversations
+            (
+                user_message,
+                bot_message
+            )
+            VALUES (?, ?)
+        """, (user_message, bot_message))
 
-    conn.commit()
-    conn.close()
+        conn.commit()
 
-def get_history():
 
-    conn = sqlite3.connect(DB_NAME)
+def get_history(limit=50):
+    """
+    Return latest conversations.
 
-    cursor = conn.cursor()
+    Returns:
+        List[Dict]
+    """
 
-    cursor.execute("""
-        SELECT user_message, bot_message, created_at
-        FROM conversations
-        ORDER BY id DESC
-    """)
+    with closing(get_connection()) as conn:
 
-    data = cursor.fetchall()
+        cursor = conn.cursor()
 
-    conn.close()
+        cursor.execute("""
+            SELECT
+                id,
+                user_message,
+                bot_message,
+                created_at
+            FROM conversations
+            ORDER BY id DESC
+            LIMIT ?
+        """, (limit,))
 
-    return data
+        rows = cursor.fetchall()
+
+    history = []
+
+    for row in rows:
+
+        history.append({
+
+            "id": row["id"],
+
+            "user_message": row["user_message"],
+
+            "bot_message": row["bot_message"],
+
+            "created_at": row["created_at"]
+
+        })
+
+    return history
+
+
+def clear_history():
+    """
+    Delete all conversations.
+    """
+
+    with closing(get_connection()) as conn:
+
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM conversations")
+
+        conn.commit()
+
+
+def get_conversation(conversation_id):
+    """
+    Get one conversation by id.
+    """
+
+    with closing(get_connection()) as conn:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                id,
+                user_message,
+                bot_message,
+                created_at
+            FROM conversations
+            WHERE id = ?
+        """, (conversation_id,))
+
+        row = cursor.fetchone()
+
+    if row is None:
+        return None
+
+    return {
+
+        "id": row["id"],
+
+        "user_message": row["user_message"],
+
+        "bot_message": row["bot_message"],
+
+        "created_at": row["created_at"]
+
+    }

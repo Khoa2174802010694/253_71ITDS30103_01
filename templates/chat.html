@@ -1,37 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot AI</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>VanLangpt</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+
 </head>
+
 <body>
 
-<div class="container">
+<div class="app">
 
-    <h1>🤖 Chatbot AI</h1>
+    <!-- ================= Sidebar ================= -->
 
-    <div id="chat-box">
+    <aside class="sidebar">
 
-    </div>
+        <div class="sidebar-top">
 
-    <div class="input-area">
-        <input
-            type="text"
-            id="message"
-            placeholder="Type your question..."
-        >
+            <button id="newChatBtn"
+                    class="new-chat-btn">
 
-        <button id="send-btn">
-            Send
-        </button>
-    </div>
+                ＋ New Chat
+
+            </button>
+
+        </div>
+
+        <div class="conversation-title">
+
+            Recent Conversations
+
+        </div>
+
+        <div id="historyList"
+             class="history-list">
+
+        </div>
+
+        <div class="sidebar-footer">
+
+            <div class="logo-circle">
+
+                VL
+
+            </div>
+
+            <div>
+
+                <div class="project-name">
+
+                    VanLangpt
+
+                </div>
+
+                <div class="project-desc">
+
+                    AI Study Assistant
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+    <!-- ================= Main ================= -->
+
+    <main class="main">
+
+        <!-- Header -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>
+
+                    VanLangpt
+
+                </h1>
+
+                <span>
+
+                    AI Study Assistant
+
+                </span>
+
+            </div>
+
+        </header>
+
+        <!-- Chat -->
+
+        <section id="chatContainer"
+                 class="chat-container">
+
+            <!-- Welcome Screen -->
+
+            <div id="welcomeScreen"
+                 class="welcome-screen">
+
+                <div class="welcome-logo">
+
+                    VL
+
+                </div>
+
+                <h2>
+
+                    Welcome to VanLangpt
+
+                </h2>
+
+                <p>
+
+                    Ask anything about programming,
+                    AI, databases,
+                    cloud computing,
+                    or software engineering.
+
+                </p>
+
+                <div class="suggestions">
+
+                    <button class="suggestion">
+
+                        Explain CNN
+
+                    </button>
+
+                    <button class="suggestion">
+
+                        Python OOP
+
+                    </button>
+
+                    <button class="suggestion">
+
+                        Docker Tutorial
+
+                    </button>
+
+                    <button class="suggestion">
+
+                        SQL JOIN
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Typing -->
+
+        <div id="typingIndicator"
+             class="typing-indicator hidden">
+
+            <div class="typing-dot"></div>
+
+            <div class="typing-dot"></div>
+
+            <div class="typing-dot"></div>
+
+        </div>
+
+        <!-- Input -->
+
+        <footer class="input-area">
+
+            <textarea
+
+                id="messageInput"
+
+                placeholder="Message VanLangpt..."
+
+                rows="1"
+
+            ></textarea>
+
+            <button id="sendButton">
+
+                ➜
+
+            </button>
+
+        </footer>
+
+    </main>
 
 </div>
+
+<!-- ================= Libraries ================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+<script>
+
+    marked.setOptions({
+
+        breaks: true,
+
+        highlight: function (code, lang) {
+
+            if (lang && hljs.getLanguage(lang)) {
+
+                return hljs.highlight(code, {
+                    language: lang
+                }).value;
+
+            }
+
+            return hljs.highlightAuto(code).value;
+
+        }
+
+    });
+
+</script>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
+
 </html>
